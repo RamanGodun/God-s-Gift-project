@@ -1,18 +1,5 @@
 import 'package:flutter/material.dart';
 
-// // Your web app's Firebase configuration
-// // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-// const firebaseConfig = {
-//   apiKey: "AIzaSyAQuE0ZkMOjVMXpxSMnubJ6Nuq8F9jUSLE",
-//   authDomain: "god-s-gift-fa.firebaseapp.com",
-//   projectId: "god-s-gift-fa",
-//   storageBucket: "god-s-gift-fa.appspot.com",
-//   messagingSenderId: "900840847869",
-//   appId: "1:900840847869:web:9b4d94a8194716e8344194",
-//   measurementId: "G-XXTML66596"
-// };
-
-// // Initialize Firebase
 // const app = initializeApp(firebaseConfig)
 
 void main() {
