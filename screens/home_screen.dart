@@ -1,13 +1,16 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:gods_gift/models/admin_model.dart';
 import 'package:gods_gift/provider/admin_provider.dart';
 import 'package:gods_gift/screens/bonus_screen.dart';
-import 'package:gods_gift/server/DB_method.dart';
 import 'package:gods_gift/utils/utils.dart';
 import 'package:provider/provider.dart';
 
 class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
+
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
@@ -24,28 +27,32 @@ class _MyHomePageState extends State<MyHomePage> {
   int _salesPointCount = 0;
   File? _imagePicker;
 
-  Future<void> saveInfo() async {
+  Future<void> saveInfo(BuildContext context) async {
+    final adminProv = Provider.of<AdminProvider>(context, listen: false);
     setState(() {
       isLoading = true;
     });
-
-    List<Map<String, String>> locationsToSave = [];
-    for (int i = 0; i < salesPoint.length; i++) {
-      locationsToSave.add({
-        'city': salesPoint[i]['city']!.text,
-        'adress': salesPoint[i]['adress']!.text,
-      });
+    try {
+      List<Map<String, String>> locationsToSave = [];
+      for (int i = 0; i < salesPoint.length; i++) {
+        locationsToSave.add({
+          'city': salesPoint[i]['city']!.text,
+          'adress': salesPoint[i]['adress']!.text,
+        });
+      }
+      final AdminModel adminData = AdminModel(
+        adminPhoneNumber: adminPhoneNumber.text,
+        adminName: adminName.text,
+        adminEmail: adminEmail.text,
+        adminImageURL: adminImageURL.text,
+        certificateURL: certificateURL.text,
+        aboutStore: aboutStore.text,
+        salesPoint: locationsToSave,
+      );
+      await adminProv.saveAdminDataAndPoints(adminData);
+    } catch (e) {
+      showSnackBar(context, 'Дані неможливо зберегти!');
     }
-    final AdminModel adminData = AdminModel(
-      adminPhoneNumber: adminPhoneNumber.text,
-      adminName: adminName.text,
-      adminEmail: adminEmail.text,
-      adminImageURL: adminImageURL.text,
-      certificateURL: certificateURL.text,
-      aboutStore: aboutStore.text,
-      salesPoint: locationsToSave,
-    );
-    await DBmethod().saveAdminInfoOnFirebase(adminData);
     setState(() {
       isLoading = false;
     });
@@ -151,7 +158,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         children: [
                           ElevatedButton(
                             onPressed: () {
-                              saveInfo();
+                              saveInfo(context);
                             },
                             child: const Text('Add'),
                           ),
