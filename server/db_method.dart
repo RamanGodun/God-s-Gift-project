@@ -1,14 +1,29 @@
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gods_gift/models/cashback_model.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+
 import '/models/admin_model.dart';
 
 class DBmethod {
   late FirebaseFirestore firestore;
   late CollectionReference adminCollection;
+  late FirebaseStorage firebaseStorage;
 
   DBmethod() {
     firestore = FirebaseFirestore.instance;
     adminCollection = firestore.collection('admin');
+    firebaseStorage = FirebaseStorage.instance;
+  }
+
+  Future<String?> saveImageToStorage(
+      {File? imageFile, String? imageName}) async {
+    Reference storageReference =
+        firebaseStorage.ref().child('images/adminPhoto/$imageName');
+    UploadTask uploadTask = storageReference.putFile(imageFile as File);
+    TaskSnapshot storageSnapshot = await uploadTask.whenComplete(() => null);
+    String downloadURL = await storageSnapshot.ref.getDownloadURL();
+    return downloadURL;
   }
 
   Future<void> saveAdminInfoOnFirebase({

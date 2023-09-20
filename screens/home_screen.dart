@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:gods_gift/models/admin_model.dart';
 import 'package:gods_gift/provider/admin_provider.dart';
 import 'package:gods_gift/screens/bonus_screen.dart';
+import 'package:gods_gift/server/DB_method.dart';
 import 'package:gods_gift/utils/utils.dart';
 import 'package:provider/provider.dart';
 
@@ -20,9 +21,9 @@ class _MyHomePageState extends State<MyHomePage> {
   TextEditingController adminPhoneNumber = TextEditingController();
   TextEditingController adminName = TextEditingController();
   TextEditingController adminEmail = TextEditingController();
+  TextEditingController aboutStore = TextEditingController();
   TextEditingController adminImageURL = TextEditingController();
   TextEditingController certificateURL = TextEditingController();
-  TextEditingController aboutStore = TextEditingController();
   final List<Map<String, TextEditingController>> salesPoint = [];
   int _salesPointCount = 0;
   File? _adminImagePicker;
@@ -41,12 +42,29 @@ class _MyHomePageState extends State<MyHomePage> {
           'adress': salesPoint[i]['adress']!.text,
         });
       }
+
+      String? adminImageUrlStorage;
+      if (_adminImagePicker != null) {
+        adminImageUrlStorage = await DBmethod().saveImageToStorage(
+          imageFile: _adminImagePicker,
+          imageName: 'admin_photo',
+        );
+      }
+
+      String? certificateImageUrlStorage;
+      if (_certificateImagePicker != null) {
+        certificateImageUrlStorage = await DBmethod().saveImageToStorage(
+          imageFile: _certificateImagePicker,
+          imageName: 'certificate_photo',
+        );
+      }
+
       final AdminModel adminData = AdminModel(
         adminPhoneNumber: adminPhoneNumber.text,
         adminName: adminName.text,
         adminEmail: adminEmail.text,
-        adminImageURL: adminImageURL.text,
-        certificateURL: certificateURL.text,
+        adminImageURL: adminImageUrlStorage ?? adminImageURL.text,
+        certificateURL: certificateImageUrlStorage ?? certificateURL.text,
         aboutStore: aboutStore.text,
         salesPoint: locationsToSave,
       );
@@ -200,7 +218,7 @@ class _MyHomePageState extends State<MyHomePage> {
         adminImage == true ? _adminImagePicker : _certificateImagePicker;
     return InkWell(
       onTap: () => selectImage(adminImage as bool),
-      child: selectedImage == null
+      child: selectedImage == null && imageUrl.isEmpty
           ? Padding(
               padding: const EdgeInsets.only(left: 10.0, right: 10),
               child: Container(
@@ -211,7 +229,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: const Icon(Icons.add_a_photo,
-                    size: 90, color: Colors.white),
+                    size: 90, color: Color.fromARGB(255, 105, 103, 103)),
               ),
             )
           : Padding(
@@ -221,10 +239,17 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: SizedBox(
                   height: 150,
                   width: 150,
-                  child: Image.file(
-                    selectedImage,
-                    fit: BoxFit.cover,
-                  ),
+                  child: selectedImage != null
+                      ? Image.file(
+                          selectedImage,
+                          fit: BoxFit.cover,
+                        )
+                      : imageUrl.isNotEmpty
+                          ? Image.network(
+                              imageUrl,
+                              fit: BoxFit.cover,
+                            )
+                          : Container(),
                 ),
               ),
             ),
