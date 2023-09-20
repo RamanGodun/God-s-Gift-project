@@ -35,7 +35,7 @@ class _MyAppState extends State<MyApp> {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
           useMaterial3: true,
         ),
-        home: MyHomePage(),
+        home: const MyHomePage(),
       ),
     );
   }
