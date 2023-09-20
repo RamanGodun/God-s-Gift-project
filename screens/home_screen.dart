@@ -25,7 +25,8 @@ class _MyHomePageState extends State<MyHomePage> {
   TextEditingController aboutStore = TextEditingController();
   final List<Map<String, TextEditingController>> salesPoint = [];
   int _salesPointCount = 0;
-  File? _imagePicker;
+  File? _adminImagePicker;
+  File? _certificateImagePicker;
 
   Future<void> saveInfo(BuildContext context) async {
     final adminProv = Provider.of<AdminProvider>(context, listen: false);
@@ -109,8 +110,10 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void selectImage() async {
-    _imagePicker = await pickImage(context);
+  void selectImage(bool adminImage) async {
+    adminImage == true
+        ? _adminImagePicker = await pickImage(context)
+        : _certificateImagePicker = await pickImage(context);
     setState(() {});
   }
 
@@ -131,17 +134,16 @@ class _MyHomePageState extends State<MyHomePage> {
                     textForm(
                         labelText: 'Phone Number',
                         controller: adminPhoneNumber),
-                    textForm(
-                      labelText: 'Name',
-                      controller: adminName,
-                    ),
+                    textForm(labelText: 'Name', controller: adminName),
                     textForm(labelText: 'Email', controller: adminEmail),
                     textForm(labelText: 'About Store', controller: aboutStore),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        chouseImage(imageUrl: adminImageURL.text),
-                        chouseImage(imageUrl: certificateURL.text),
+                        chouseImage(
+                            imageUrl: adminImageURL.text, adminImage: true),
+                        chouseImage(
+                            imageUrl: certificateURL.text, adminImage: false),
                       ],
                     ),
                     for (int i = 0; i < _salesPointCount; i++)
@@ -193,10 +195,12 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Widget chouseImage({required String imageUrl}) {
+  Widget chouseImage({required String imageUrl, bool? adminImage}) {
+    File? selectedImage =
+        adminImage == true ? _adminImagePicker : _certificateImagePicker;
     return InkWell(
-      onTap: () => selectImage(),
-      child: _imagePicker == null
+      onTap: () => selectImage(adminImage as bool),
+      child: selectedImage == null
           ? Padding(
               padding: const EdgeInsets.only(left: 10.0, right: 10),
               child: Container(
@@ -213,23 +217,16 @@ class _MyHomePageState extends State<MyHomePage> {
           : Padding(
               padding: const EdgeInsets.only(left: 10.0, right: 10),
               child: ClipRRect(
-                  borderRadius: BorderRadius.circular(15),
-                  child: SizedBox(
-                    height: 150,
-                    width: 150,
-                    child: _imagePicker != null
-                        ? ClipRRect(
-                            borderRadius: BorderRadius.circular(15),
-                            child: Image.file(
-                              _imagePicker!,
-                              fit: BoxFit.cover,
-                            ),
-                          )
-                        : Image.network(
-                            imageUrl,
-                            fit: BoxFit.cover,
-                          ),
-                  )),
+                borderRadius: BorderRadius.circular(15),
+                child: SizedBox(
+                  height: 150,
+                  width: 150,
+                  child: Image.file(
+                    selectedImage,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
             ),
     );
   }
@@ -251,18 +248,24 @@ class _MyHomePageState extends State<MyHomePage> {
     required int index,
   }) {
     int locationNumber = index + 1;
-    return Card(
-      child: Column(children: [
-        Text('Локація №$locationNumber'),
-        textForm(labelText: 'city', controller: locationData['city']),
-        textForm(labelText: 'adress', controller: locationData['adress']),
-        ElevatedButton(
-          onPressed: () {
-            removeLocationContainer(index);
-          },
-          child: const Text('Delete point'),
-        ),
-      ]),
+    return Padding(
+      padding: const EdgeInsets.all(15.0),
+      child: Card(
+        child: Column(children: [
+          Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: Text('Локація №$locationNumber'),
+          ),
+          textForm(labelText: 'city', controller: locationData['city']),
+          textForm(labelText: 'adress', controller: locationData['adress']),
+          ElevatedButton(
+            onPressed: () {
+              removeLocationContainer(index);
+            },
+            child: const Text('Delete point'),
+          ),
+        ]),
+      ),
     );
   }
 }
