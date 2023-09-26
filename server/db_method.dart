@@ -21,7 +21,7 @@ class DBmethod {
     Reference storageReference =
         firebaseStorage.ref().child('images/adminPhoto/$imageName');
     UploadTask uploadTask = storageReference.putFile(imageFile as File);
-    TaskSnapshot storageSnapshot = await uploadTask.whenComplete(() => null);
+    TaskSnapshot storageSnapshot = await uploadTask;
     String downloadURL = await storageSnapshot.ref.getDownloadURL();
     return downloadURL;
   }
@@ -67,10 +67,10 @@ class DBmethod {
     try {
       if (snapshot.exists) {
         final data = snapshot.data() as Map<String, dynamic>;
-        if (docName == 'admin_data') {
+        if (docName == 'adminData') {
           final adminData = AdminModel.fromMap(data);
           return adminData;
-        } else if (docName == 'cashback_data') {
+        } else if (docName == 'cashbackData') {
           final cashbackData = CashbackModel.fromMap(data);
           return cashbackData;
         } else {
