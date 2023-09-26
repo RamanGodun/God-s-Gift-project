@@ -5,7 +5,7 @@ class AdminModel {
   final String adminImageURL;
   final String certificateURL;
   final String aboutStore;
-  final List<Map<String, dynamic>> salesPoint;
+  final List<Map<String, dynamic>> salePoints;
 
   AdminModel({
     required this.adminPhoneNumber,
@@ -14,33 +14,33 @@ class AdminModel {
     required this.adminImageURL,
     required this.certificateURL,
     required this.aboutStore,
-    required this.salesPoint,
+    required this.salePoints,
   });
 
   factory AdminModel.fromMap(Map<String, dynamic> map) {
-    final List<Map<String, dynamic>> salesPointList =
-        List<Map<String, dynamic>>.from(map['salesPoint'] ?? []);
+    final List<Map<String, dynamic>> salePointsList =
+        List<Map<String, dynamic>>.from(map['salePoints'] ?? []);
 
     return AdminModel(
-      adminPhoneNumber: map['adminPhoneNumber'],
+      adminPhoneNumber: map['adminPhoneNumber'] ?? '',
       adminName: map['adminName'] ?? '',
       adminEmail: map['adminEmail'] ?? '',
       adminImageURL: map['adminImageURL'] ?? '',
       certificateURL: map['certificateURL'] ?? '',
       aboutStore: map['aboutStore'] ?? '',
-      salesPoint: salesPointList,
+      salePoints: salePointsList,
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      "adminPhoneNumber": adminPhoneNumber,
-      "adminName": adminName,
-      "adminEmail": adminEmail,
-      "adminImageURL": adminImageURL,
-      "certificateURL": certificateURL,
-      "aboutStore": aboutStore,
-      "salesPoint": salesPoint,
+      'adminPhoneNumber': adminPhoneNumber,
+      'adminName': adminName,
+      'adminEmail': adminEmail,
+      'adminImageURL': adminImageURL,
+      'certificateURL': certificateURL,
+      'aboutStore': aboutStore,
+      'salePoints': salePoints,
     };
   }
 }
